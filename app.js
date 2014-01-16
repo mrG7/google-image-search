@@ -59,7 +59,6 @@ g.runSearch = function(searchIndex, query){
     )
 
     function fetch(url, pageNumber, callback){
-        console.log(url);
         $.ajax(
             {
                 url: url,
@@ -90,7 +89,6 @@ g.runSearch = function(searchIndex, query){
         function (task, callback) {
             if(searchIndex==g.searchCount){
                 fetch(task.url, task.page, function(err, stats){
-                    stats.error = err;
                     g.updateStats(stats);
                 });
             }
