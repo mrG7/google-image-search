@@ -47,7 +47,6 @@ g.runSearch = function(searchIndex, query){
         },
         function callback(err, next){
             if(searchIndex==g.searchCount){
-                console.log('obuff callback');
                 g.results.add(
                     next.results.slice(0, g.settings.maxResultCount - g.results.length)
                         .map(function(result){
