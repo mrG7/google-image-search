@@ -38,96 +38,45 @@ g.updateQueryParam = function(uri, key, value) {
  */
 g.runSearch = function(searchIndex, query){
 
-    /*
-    Maintain a history of requests sent for various pages in the result set.
-    (*don't* assume that pages [1, 2, 3, ...] is consistent between calls, or
-    that the entire page set required to satisfy maxResultCount will be in the
-    initial request.
-
-    Keys of history objects should contain
-
-        label, start
-            From page object in search api
-
-        requestedCount
-            Track how many results we have requested (avoid unneeded extra
-            ajax requests on slow connections while response load)
-
-        results, consumed
-            Track results from each page to maintain ordering across pages
-            when inserting for display
-
-     */
-    var history = {};
-
-    function reqCTotal(){
-        var t = 0;
-        for(var k in history){
-            t = t + history[k].requestedCount;
-        }
-        return t;
-    }
-
-    /*
-    "Consume" history items that haven't been added to the collection
-    of results on display. Result pages arrive asynchonously; consume will
-    display any new pages of results that definitely won't require any
-    insertions above them.
-     */
-    function consume(){
-        var keys = Object.keys(history).sort();
-        for(var i=0; i<keys.length; i++){
-
-            var k = keys[i],
-                v = history[k];
-
-            if((k==1 && !v.consumed || k > 1 && history[k-1].consumed && !v.consumed) && v.results!=null){
-                if(searchIndex==g.searchCount){
-                    g.results.add(
-                        v.results.slice(0, g.settings.maxResultCount - g.results.length)
-                            .map(function(result){
-                                return _.extend(result, {page: k});
-                            }));
-                    v.consumed = true;
-                }
+    var oBuffer = new gUtils.OrderingBuffer(
+        function isNext(a, b){
+            if(a==null && b.label==1 || a && b.label== a.label+1){
+                return true;
+            }
+        },
+        function callback(err, next){
+            if(searchIndex==g.searchCount){
+                console.log('obuff callback');
+                g.results.add(
+                    next.results.slice(0, g.settings.maxResultCount - g.results.length)
+                        .map(function(result){
+                            return _.extend(result, {page: next.label});
+                        }
+                    )
+                );
             }
         }
-    }
+    )
 
-    function fetch(url, callback){
+    function fetch(url, pageNumber, callback){
+        console.log(url);
         $.ajax(
             {
                 url: url,
                 dataType: 'jsonp',
                 success: function(data) {
-
                     if(data.responseData){
-
                         var results = data.responseData.results,
                             cursor = data.responseData.cursor,
-                            pages = cursor.pages,
                             stats = {};
-
                         if(results.length > 0){
                             stats.totalResultsEstimate = cursor.estimatedResultCount;
-                            history[cursor.currentPageIndex+1].results = results;
-
-                            pages.forEach(function(page){
-                                if(history[page.label]==null && reqCTotal() < g.settings.maxResultCount){
-                                    requests.push({url: g.updateQueryParam(url, 'start', page.start)});
-                                    history[page.label] = _.extend(page, {requestedCount:g.settings.pageSize, results: null, consumed: false});
-                                }
-                            });
+                            oBuffer.add({label: pageNumber, results: results});
                         } else {
                             stats.totalResultsEstimate = 0;
                         }
-
                         callback(undefined, stats);
                     }
-
-                },
-                complete: function(){
-                    consume();
                 }
             }
         );
@@ -140,8 +89,8 @@ g.runSearch = function(searchIndex, query){
     var requests = async.queue(
         function (task, callback) {
             if(searchIndex==g.searchCount){
-                fetch(task.url, function(err, stats){
-                    //todo: error handling
+                fetch(task.url, task.page, function(err, stats){
+                    stats.error = err;
                     g.updateStats(stats);
                 });
             }
@@ -153,18 +102,16 @@ g.runSearch = function(searchIndex, query){
     g.results.reset();
     $('#results').html('');
 
-    history[1] = _.extend({label: 1, start: 0, requestedCount: g.settings.pageSize, results: null, consumed: false});
-    requests.push(
-        {
-            url: g.updateQueryParam(g.settings.searchEndpoint, 'q', query)
-        }
-    );
+    var urlWithQuery = g.updateQueryParam(g.settings.searchEndpoint, 'q', query);
+    for(var i=0, p=1; i < g.settings.maxResultCount; i += g.settings.pageSize, p++){
+        requests.push({url: g.updateQueryParam(urlWithQuery, 'start', i), page: p});
+    }
 }
 
 g.newSearch = _.debounce(
     function(){
         g.updateStats();
-        var query = $('#input-query').val()
+        var query = $('#input-query').val();
         g.runSearch(++g.searchCount, query);
     },
     g.settings.instantSearchDelay
