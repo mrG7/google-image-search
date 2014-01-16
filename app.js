@@ -103,7 +103,6 @@ g.runSearch = function(searchIndex, query){
 
     var urlWithQuery = g.updateQueryParam(g.settings.searchEndpoint, 'q', query);
     for(var i=0, p=1; i < g.settings.maxResultCount; i += g.settings.pageSize, p++){
-        console.log(g.updateQueryParam(urlWithQuery, 'start', i));
         requests.push({url: g.updateQueryParam(urlWithQuery, 'start', i), page: p});
     }
 }
