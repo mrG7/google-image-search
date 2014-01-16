@@ -9,7 +9,6 @@ gUtils.OrderingBuffer = function(isNext, callback){
 }
 
 gUtils.OrderingBuffer.prototype.add = function(obj){
-    console.log('add to buffer')
     this.buffer.push(obj);
     var n;
     while(n=this._getNext()){
