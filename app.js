@@ -10,7 +10,8 @@ var g = {
     settings: {},
 
     //app state
-    searchCount: 0
+    searchCount: 0,
+    currentQuery: $('#input-query').val()
 };
 
 g.settings.maxResultCount = 50;
@@ -108,9 +109,12 @@ g.runSearch = function(searchIndex, query){
 
 g.newSearch = _.debounce(
     function(){
-        g.updateStats();
         var query = $('#input-query').val();
-        g.runSearch(++g.searchCount, query);
+        if(query!= g.currentQuery){
+            g.currentQuery = query;
+            g.updateStats();
+            g.runSearch(++g.searchCount, query);
+        }
     },
     g.settings.instantSearchDelay
 )
