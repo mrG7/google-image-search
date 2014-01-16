@@ -112,7 +112,7 @@ g.newSearch = _.debounce(
         var query = $('#input-query').val();
         if(query!= g.currentQuery){
             g.currentQuery = query;
-            g.updateStats();
+            g.updateStats({totalResultsEstimate: 'fetching'});
             g.runSearch(++g.searchCount, query);
         }
     },
