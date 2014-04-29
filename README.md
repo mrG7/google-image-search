@@ -1,7 +1,9 @@
 Google Image Search Web-client
 ===
 
-A web application showcasing the Google Image Search API.  This is a web app equivalent of an [Android prototype I built](https://github.com/Trindaz/android-google-image-search) using the same Google Image Search API.
+A bare-bones [Backbone](http://backbonejs.org/) web application showcasing the [Google Image Search API](https://developers.google.com/image-search/).
+
+This is a web app equivalent of an [Android prototype I built](https://github.com/Trindaz/android-google-image-search) using the same Google Image Search API.
 
 Demo
 ---
@@ -23,10 +25,9 @@ Implementation Notes
 * Graceful ordering (results arrive one by one in order, flowing across/down the page) achieved by using "OrderingBuffer"
 * The name OrderingBuffer comes from a customized data structure with the property of having objects given to the callback in order, *not* of storing an internally sorted buffer of results.
 
-OrderingBuffer
----
+### OrderingBuffer
 
-This is a pattern that should exist in either JQuery or Underscore or similar - a simple solution to the common concern of maintaining the order of items in a list across multiple XHR requests. Who knows how many messy implementations there are out there with various hacks for ensuring this?
+OrderingBuffer is a simple solution to the common concern of maintaining the order of items in a list across multiple XHR requests. Who knows how many messy implementations there are out there with various hacks for ensuring this?
 
 OrderingBuffer is great because by adding a custom `isNext` to a standard array you get a no-fuss data structure for easy re-use when restoring a list from multiple XHR requests.
 
