@@ -16,6 +16,20 @@ Screenshots
 
 ![Alt text](https://raw.githubusercontent.com/Trindaz/google-image-search/2efb29f1ed255b6e0b4f6e7b4d2877a032d05b38/docs/Screen%20Shot%202014-04-29%20at%204.44.49%20pm.png "Google Image Search Web-client (Screenshot 1)")
 
+Installation
+---
+
+```bash
+git clone https://github.com/Trindaz/google-image-search.git
+```
+
+Usage
+---
+
+```bash
+open index.html
+```
+
 Implementation Notes
 ---
 
@@ -29,7 +43,7 @@ Implementation Notes
 
 OrderingBuffer is a simple solution to the common concern of maintaining the order of items in a list across multiple XHR requests. Who knows how many messy implementations there are out there with various hacks for ensuring this?
 
-OrderingBuffer is great because by adding a custom `isNext` to a standard array you get a no-fuss data structure for easy re-use when restoring a list from multiple XHR requests.
+OrderingBuffer is great because by adding a custom `isNext` function to a standard array you get a no-fuss data structure for easy re-use when restoring a list from multiple XHR requests.
 
 In the case of Google Image Search API usage, `isNext` is defined as:
 
