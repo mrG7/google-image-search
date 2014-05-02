@@ -14,7 +14,7 @@ Demo
 Screenshots
 ---
 
-![Alt text](https://raw.githubusercontent.com/Trindaz/google-image-search/2efb29f1ed255b6e0b4f6e7b4d2877a032d05b38/docs/Screen%20Shot%202014-04-29%20at%204.44.49%20pm.png "Google Image Search Web-client (Screenshot 1)")
+![Google Image Search Web-client (Screenshot 1)](https://raw.githubusercontent.com/Trindaz/google-image-search/2efb29f1ed255b6e0b4f6e7b4d2877a032d05b38/docs/Screen%20Shot%202014-04-29%20at%204.44.49%20pm.png "Google Image Search Web-client (Screenshot 1)")
 
 Installation
 ---
